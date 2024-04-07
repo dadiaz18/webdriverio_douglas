@@ -13,7 +13,7 @@ export const config: Options.Testrunner = {
             transpileOnly: true
         }
     },
-    
+
     //
     // ==================
     // Specify Test Files
@@ -58,8 +58,12 @@ export const config: Options.Testrunner = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
+
     capabilities: [{
-        browserName: 'chrome'
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+            args: ['--incognito', '--start-maximized', '--keep-alive']
+        }
     }],
 
     //
@@ -118,7 +122,7 @@ export const config: Options.Testrunner = {
     // Make sure you have the wdio adapter package for the specific framework installed
     // before running any tests.
     framework: 'cucumber',
-    
+
     //
     // The number of times to retry the entire specfile when it fails as a whole
     // specFileRetries: 1,
@@ -132,12 +136,13 @@ export const config: Options.Testrunner = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec','html-nice'],
+    reporters: ['spec', 'html-nice'],
+    //reporters: ['spec'],
 
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
         // <string[]> (file/dir) require files before executing features
-        require: ['./features/step-definitions/steps.ts'],
+        require: ['./features/step-definitions/*.ts'],
         // <boolean> show full backtrace for errors
         backtrace: false,
         // <string[]> ("extension:module") require files with the given EXTENSION after requiring MODULE (repeatable)
@@ -261,8 +266,14 @@ export const config: Options.Testrunner = {
      * @param {number}             result.duration  duration of scenario in milliseconds
      * @param {object}             context          Cucumber World object
      */
-    // afterStep: function (step, scenario, result, context) {
-    // },
+     afterStep: async function (step, scenario, result, context) {
+    //    await browser.pause(3000);
+    //    await $('head').waitForExist();
+    //    await $('head').waitForDisplayed();
+    
+        await $('body').waitForExist();
+        await $('body').waitForDisplayed();
+    },
     /**
      *
      * Runs after a Cucumber Scenario.
@@ -273,8 +284,12 @@ export const config: Options.Testrunner = {
      * @param {number}                 result.duration  duration of scenario in milliseconds
      * @param {object}                 context          Cucumber World object
      */
-    // afterScenario: function (world, result, context) {
-    // },
+    afterScenario: async function (world, result, context) {
+        await browser.deleteAllCookies();
+        await browser.execute('window.sessionStorage.clear();');
+        await browser.execute('window.localStorage.clear();');
+        await browser.reloadSession();
+    },
     /**
      *
      * Runs after a Cucumber Feature.
@@ -283,7 +298,7 @@ export const config: Options.Testrunner = {
      */
     // afterFeature: function (uri, feature) {
     // },
-    
+
     /**
      * Runs after a WebdriverIO command gets executed
      * @param {string} commandName hook command name
@@ -291,8 +306,9 @@ export const config: Options.Testrunner = {
      * @param {number} result 0 - command success, 1 - command error
      * @param {object} error error object if any
      */
-    // afterCommand: function (commandName, args, result, error) {
-    // },
+    //afterCommand: async function (commandName, args, result, error) {
+        //await browser.pause(100);
+    //},
     /**
      * Gets executed after all tests are done. You still have access to all global variables from
      * the test.
@@ -300,8 +316,9 @@ export const config: Options.Testrunner = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that ran
      */
-    // after: function (result, capabilities, specs) {
-    // },
+    //after: function (result, capabilities, specs) {
+    //  
+    //},
     /**
      * Gets executed right after terminating the webdriver session.
      * @param {object} config wdio configuration object
