@@ -1,6 +1,7 @@
+import { $ } from '@wdio/globals'
 class NavBarPage{
     //elements
-    parfumOption = () => browser.$('[data-uid="FragrancesNavNode_DE"] a');
+    parfumOption = () => $('[data-uid="FragrancesNavNode_DE"]');
 }
 
 export default new NavBarPage();

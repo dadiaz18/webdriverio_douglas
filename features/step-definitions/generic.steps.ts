@@ -2,7 +2,7 @@ import { Given, When, Then } from '@wdio/cucumber-framework';
 import { expect, $ } from '@wdio/globals'
 
 //I pause for 5 seconds step, but dynamic
-When(/^I pause for (\d+) seconds$/, async (val) => {
+When(/^I pause for (\d+) seconds$/, async (val: number) => {
     await browser.pause(val*1000);
 });
 
@@ -29,6 +29,7 @@ When(/^I wait until the page is loaded$/, async () => {
         });
     });
 });
+
 
 // I reload the page
 When(/^I reload the page$/, async () => {

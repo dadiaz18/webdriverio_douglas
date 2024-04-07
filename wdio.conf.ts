@@ -62,7 +62,7 @@ export const config: Options.Testrunner = {
     capabilities: [{
         browserName: 'chrome',
         'goog:chromeOptions': {
-            args: ['--incognito', '--start-maximized', '--keep-alive']
+            args: ['--incognito', '--start-maximized', '--disable-infobars', '--disable-notifications', '--disable-popup-blocking']
         }
     }],
 
@@ -137,10 +137,10 @@ export const config: Options.Testrunner = {
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec', 'html-nice'],
-    //reporters: ['spec'],
 
     // If you are using Cucumber you need to specify the location of your step definitions.
     cucumberOpts: {
+        retry: 4,
         // <string[]> (file/dir) require files before executing features
         require: ['./features/step-definitions/*.ts'],
         // <boolean> show full backtrace for errors
@@ -266,13 +266,15 @@ export const config: Options.Testrunner = {
      * @param {number}             result.duration  duration of scenario in milliseconds
      * @param {object}             context          Cucumber World object
      */
-     afterStep: async function (step, scenario, result, context) {
-    //    await browser.pause(3000);
-    //    await $('head').waitForExist();
-    //    await $('head').waitForDisplayed();
-    
+     afterStep: async function (step, scenario, result, context) { 
+        await browser.waitUntil(async () => {
+            return await browser.execute(() => {
+                return document.readyState === 'complete';
+            });
+        });
         await $('body').waitForExist();
         await $('body').waitForDisplayed();
+        await browser.pause(200);
     },
     /**
      *
@@ -288,7 +290,12 @@ export const config: Options.Testrunner = {
         await browser.deleteAllCookies();
         await browser.execute('window.sessionStorage.clear();');
         await browser.execute('window.localStorage.clear();');
-        await browser.reloadSession();
+        
+        await browser.newSession(this.capabilities);
+        
+        //await browser.reloadSession();
+        await $('body').waitForExist();
+        await $('body').waitForDisplayed();
     },
     /**
      *

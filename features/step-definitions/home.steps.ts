@@ -11,14 +11,21 @@ When(/^I reject all cookies$/, async () => {
     await HomePage.CookiesModalPage.denyAllCookiesButton().click();
 });
 
-When(/^I click on "(.*)" link in the navigation bar$/, async (val) => {
+
+When(/^I accept all cookies$/, async () => {
+    await HomePage.CookiesModalPage.modalBody().waitForExist();
+    await HomePage.CookiesModalPage.modalBody().waitForDisplayed();
+    await HomePage.CookiesModalPage.acceptAllCookiesButton().click();
+});
+
+When(/^I click on "(.*)" link in the navigation bar$/, async (val: string) => {
     let element: WebdriverIO.Element | undefined = undefined;
-    switch(val){
+    switch (val) {
         case 'parfum':
             element = await HomePage.navBar.parfumOption();
             break;
     }
-    if(!element){
+    if (!element) {
         throw new Error(`Element with text ${val} not found`);
     }
 
